@@ -107,7 +107,7 @@ go get -u github.com/tal-tech/go-zero
 
    ```shell
    # for Go 1.15 and earlier
-   GO111MODULE=on go get -u github.com/tal-tech/go-zero/tools/goctl
+   GO111MODULE=on go get -u github.com/tal-tech/go-zero/tools/goctl@latest
    
    # for Go 1.16 and later
    go install github.com/tal-tech/go-zero/tools/goctl@latest
@@ -221,7 +221,16 @@ go get -u github.com/tal-tech/go-zero
 
 ## 9. Chat group
 
-Join the chat via https://join.slack.com/t/go-zero/shared_invite/zt-ulzixfgi-NAkZjq856TewLY2KQSxHCw
+Join the chat via https://join.slack.com/t/go-zero/shared_invite/zt-10ruju779-BE4y6lQNB_R21samtyKTgA
+
+## 10. Cloud Native Landscape
+
+<p float="left">
+<img src="https://landscape.cncf.io/images/left-logo.svg" width="150"/>&nbsp;&nbsp;&nbsp;
+<img src="https://landscape.cncf.io/images/right-logo.svg" width="200"/>
+</p>
+
+go-zero enlisted in the [CNCF Cloud Native Landscape](https://landscape.cncf.io/?selected=go-zero).
 
 ## Give a Star! ⭐
 

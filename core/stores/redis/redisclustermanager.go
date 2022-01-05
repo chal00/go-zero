@@ -5,7 +5,7 @@ import (
 	"io"
 
 	red "github.com/go-redis/redis"
-	"github.com/tal-tech/go-zero/core/syncx"
+	"github.com/zeromicro/go-zero/core/syncx"
 )
 
 var clusterManager = syncx.NewResourceManager()
@@ -25,7 +25,7 @@ func getCluster(r *Redis) (*red.ClusterClient, error) {
 			MinIdleConns: idleConns,
 			TLSConfig:    tlsConfig,
 		})
-		store.WrapProcess(process)
+		store.WrapProcess(checkDuration)
 
 		return store, nil
 	})

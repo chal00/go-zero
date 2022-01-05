@@ -7,16 +7,16 @@ import (
 	"text/template"
 
 	"github.com/tal-tech/go-zero/tools/goctl/internal/errorx"
+	"github.com/tal-tech/go-zero/tools/goctl/util/pathx"
 )
 
 const regularPerm = 0o666
 
 // DefaultTemplate is a tool to provides the text/template operations
 type DefaultTemplate struct {
-	name     string
-	text     string
-	goFmt    bool
-	savePath string
+	name  string
+	text  string
+	goFmt bool
 }
 
 // With returns a instance of DefaultTemplate
@@ -40,7 +40,7 @@ func (t *DefaultTemplate) GoFmt(format bool) *DefaultTemplate {
 
 // SaveTo writes the codes to the target path
 func (t *DefaultTemplate) SaveTo(data interface{}, path string, forceUpdate bool) error {
-	if FileExists(path) && !forceUpdate {
+	if pathx.FileExists(path) && !forceUpdate {
 		return nil
 	}
 
@@ -70,7 +70,7 @@ func (t *DefaultTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
 
 	formatOutput, err := goformat.Source(buf.Bytes())
 	if err != nil {
-		return nil, errorx.Wrap(err, "go format error:", string(buf.Bytes()))
+		return nil, errorx.Wrap(err, "go format error:", buf.String())
 	}
 
 	buf.Reset()

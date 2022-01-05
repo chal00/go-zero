@@ -4,18 +4,18 @@ import (
 	"strings"
 
 	red "github.com/go-redis/redis"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/core/mapping"
-	"github.com/tal-tech/go-zero/core/timex"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/mapping"
+	"github.com/zeromicro/go-zero/core/timex"
 )
 
-func process(proc func(red.Cmder) error) func(red.Cmder) error {
+func checkDuration(proc func(red.Cmder) error) func(red.Cmder) error {
 	return func(cmd red.Cmder) error {
 		start := timex.Now()
 
 		defer func() {
 			duration := timex.Since(start)
-			if duration > slowThreshold {
+			if duration > slowThreshold.Load() {
 				var buf strings.Builder
 				for i, arg := range cmd.Args() {
 					if i > 0 {

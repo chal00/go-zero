@@ -16,13 +16,13 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
-	"github.com/tal-tech/go-zero/core/fx"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/core/stat"
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/stores/redis"
-	"github.com/tal-tech/go-zero/core/stores/redis/redistest"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/core/fx"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stat"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/core/stores/redis/redistest"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
 func init() {
@@ -286,7 +286,7 @@ func TestStatCacheFails(t *testing.T) {
 	log.SetOutput(ioutil.Discard)
 	defer log.SetOutput(os.Stdout)
 
-	r := redis.NewRedis("localhost:59999", redis.NodeType)
+	r := redis.New("localhost:59999")
 	c := NewNodeConn(dummySqlConn{}, r, cache.WithExpiry(time.Second*10))
 
 	for i := 0; i < 20; i++ {
@@ -485,7 +485,7 @@ func TestCachedConnExecDropCache(t *testing.T) {
 		value = "any"
 	)
 	var conn trackedConn
-	c := NewNodeConn(&conn, redis.NewRedis(r.Addr(), redis.NodeType), cache.WithExpiry(time.Second*30))
+	c := NewNodeConn(&conn, redis.New(r.Addr()), cache.WithExpiry(time.Second*30))
 	assert.Nil(t, c.SetCache(key, value))
 	_, err = c.Exec(func(conn sqlx.SqlConn) (result sql.Result, e error) {
 		return conn.Exec("delete from user_table where id='kevin'")
@@ -503,7 +503,7 @@ func TestCachedConnExecDropCache(t *testing.T) {
 func TestCachedConnExecDropCacheFailed(t *testing.T) {
 	const key = "user"
 	var conn trackedConn
-	r := redis.NewRedis("anyredis:8888", redis.NodeType)
+	r := redis.New("anyredis:8888")
 	c := NewNodeConn(&conn, r, cache.WithExpiry(time.Second*10))
 	_, err := c.Exec(func(conn sqlx.SqlConn) (result sql.Result, e error) {
 		return conn.Exec("delete from user_table where id='kevin'")
@@ -560,6 +560,18 @@ func TestQueryRowNoCache(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, value, user)
 	assert.True(t, ran)
+}
+
+func TestNewConnWithCache(t *testing.T) {
+	r, clean, err := redistest.CreateRedis()
+	assert.Nil(t, err)
+	defer clean()
+
+	var conn trackedConn
+	c := NewConnWithCache(&conn, cache.NewNode(r, exclusiveCalls, stats, sql.ErrNoRows))
+	_, err = c.ExecNoCache("delete from user_table where id='kevin'")
+	assert.Nil(t, err)
+	assert.True(t, conn.execValue)
 }
 
 func resetStats() {
