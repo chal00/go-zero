@@ -10,14 +10,15 @@ import (
 	"strings"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/tal-tech/go-zero/tools/goctl/internal/version"
+	"github.com/zeromicro/go-zero/tools/goctl/internal/version"
 )
 
 // NL defines a new line
 const (
-	NL       = "\n"
-	goctlDir = ".goctl"
-	gitDir   = ".git"
+	NL              = "\n"
+	goctlDir        = ".goctl"
+	gitDir          = ".git"
+	autoCompleteDir = ".auto_complete"
 )
 
 var goctlHome string
@@ -91,6 +92,16 @@ func GetGitHome() (string, error) {
 	}
 
 	return filepath.Join(goctlH, gitDir), nil
+}
+
+// GetAutoCompleteHome returns the auto_complete home of goctl.
+func GetAutoCompleteHome() (string, error) {
+	goctlH, err := GetGoctlHome()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(goctlH, autoCompleteDir), nil
 }
 
 // GetTemplateDir returns the category path value in GoctlHome where could get it by GetGoctlHome

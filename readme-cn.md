@@ -11,6 +11,8 @@
 [![Release](https://img.shields.io/github/v/release/zeromicro/go-zero.svg?style=flat-square)](https://github.com/zeromicro/go-zero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> ***缩短从需求到上线的距离***
+
 **注意：为了满足开源基金会要求，go-zero 从好未来（tal-tech）组织下迁移至中立的 GitHub 组织（zeromicro）。**
 
 ## 0. go-zero 介绍
@@ -87,7 +89,7 @@ go-zero 是一个集成了各种工程实践的包含 web 和 rpc 框架，有�
 在项目目录下通过如下命令安装：
 
 ```shell
-GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/tal-tech/go-zero
+GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/zeromicro/go-zero
 ```
 
 ## 5. Quick Start
@@ -104,10 +106,10 @@ GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/tal-tech/
 
     ```shell
     # Go 1.15 及之前版本
-    GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/tal-tech/go-zero/tools/goctl@latest
+    GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/zeromicro/go-zero/tools/goctl@latest
     
     # Go 1.16 及以后版本
-    GOPROXY=https://goproxy.cn/,direct go install github.com/tal-tech/go-zero/tools/goctl@latest
+    GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest
     ```
 
     确保 goctl 可执行
@@ -232,9 +234,13 @@ go-zero 已被许多公司用于生产部署，接入场景如在线教育、电
 >46. 上海游族网络
 >47. 深信服
 >48. 中免日上科技互联有限公司
->48. ECLOUDVALLEY TECHNOLOGY (HK) LIMITED
->48. 馨科智（深圳）科技有限公司
->48. 成都松珀科技有限公司
+>49. ECLOUDVALLEY TECHNOLOGY (HK) LIMITED
+>50. 馨科智（深圳）科技有限公司
+>51. 成都松珀科技有限公司
+>52. 亿景智联
+>53. 上海扩博智能技术有限公司
+>54. 一犀科技成都有限公司
+>55. 北京术杰科技有限公司
 
 如果贵公司也已使用 go-zero，欢迎在 [登记地址](https://github.com/zeromicro/go-zero/issues/602) 登记，仅仅为了推广，不做其它用途。
 

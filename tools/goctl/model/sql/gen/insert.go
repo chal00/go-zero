@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/pathx"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/core/collection"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/template"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 func genInsert(table Table, withCache, postgreSql bool) (string, string, error) {
@@ -62,6 +62,7 @@ func genInsert(table Table, withCache, postgreSql bool) (string, string, error) 
 			"expressionValues":      strings.Join(expressionValues, ", "),
 			"keys":                  strings.Join(keySet.KeysStr(), "\n"),
 			"keyValues":             strings.Join(keyVariableSet.KeysStr(), ", "),
+			"data":                  table,
 		})
 	if err != nil {
 		return "", "", err
@@ -75,6 +76,7 @@ func genInsert(table Table, withCache, postgreSql bool) (string, string, error) 
 
 	insertMethodOutput, err := util.With("insertMethod").Parse(text).Execute(map[string]interface{}{
 		"upperStartCamelObject": camel,
+		"data":                  table,
 	})
 	if err != nil {
 		return "", "", err

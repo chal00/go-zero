@@ -6,30 +6,32 @@ import (
 	"runtime"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/tal-tech/go-zero/core/load"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/tools/goctl/api/apigen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/dartgen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/docgen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/format"
-	"github.com/tal-tech/go-zero/tools/goctl/api/gogen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/javagen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/ktgen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/new"
-	"github.com/tal-tech/go-zero/tools/goctl/api/tsgen"
-	"github.com/tal-tech/go-zero/tools/goctl/api/validate"
-	"github.com/tal-tech/go-zero/tools/goctl/bug"
-	"github.com/tal-tech/go-zero/tools/goctl/docker"
-	"github.com/tal-tech/go-zero/tools/goctl/internal/errorx"
-	"github.com/tal-tech/go-zero/tools/goctl/internal/version"
-	"github.com/tal-tech/go-zero/tools/goctl/kube"
-	"github.com/tal-tech/go-zero/tools/goctl/model/mongo"
-	model "github.com/tal-tech/go-zero/tools/goctl/model/sql/command"
-	"github.com/tal-tech/go-zero/tools/goctl/plugin"
-	rpc "github.com/tal-tech/go-zero/tools/goctl/rpc/cli"
-	"github.com/tal-tech/go-zero/tools/goctl/tpl"
-	"github.com/tal-tech/go-zero/tools/goctl/upgrade"
 	"github.com/urfave/cli"
+	"github.com/zeromicro/go-zero/core/load"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/tools/goctl/api/apigen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/dartgen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/docgen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/format"
+	"github.com/zeromicro/go-zero/tools/goctl/api/gogen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/javagen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/ktgen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/new"
+	"github.com/zeromicro/go-zero/tools/goctl/api/tsgen"
+	"github.com/zeromicro/go-zero/tools/goctl/api/validate"
+	"github.com/zeromicro/go-zero/tools/goctl/bug"
+	"github.com/zeromicro/go-zero/tools/goctl/completion"
+	"github.com/zeromicro/go-zero/tools/goctl/docker"
+	"github.com/zeromicro/go-zero/tools/goctl/internal/errorx"
+	"github.com/zeromicro/go-zero/tools/goctl/internal/version"
+	"github.com/zeromicro/go-zero/tools/goctl/kube"
+	"github.com/zeromicro/go-zero/tools/goctl/migrate"
+	"github.com/zeromicro/go-zero/tools/goctl/model/mongo"
+	model "github.com/zeromicro/go-zero/tools/goctl/model/sql/command"
+	"github.com/zeromicro/go-zero/tools/goctl/plugin"
+	rpc "github.com/zeromicro/go-zero/tools/goctl/rpc/cli"
+	"github.com/zeromicro/go-zero/tools/goctl/tpl"
+	"github.com/zeromicro/go-zero/tools/goctl/upgrade"
 )
 
 const codeFailure = 1
@@ -44,6 +46,22 @@ var commands = []cli.Command{
 		Name:   "upgrade",
 		Usage:  "upgrade goctl to latest version",
 		Action: upgrade.Upgrade,
+	},
+	{
+		Name:        "migrate",
+		Usage:       "migrate from tal-tech to zeromicro",
+		Description: "migrate is a transition command to help users migrate their projects from tal-tech to zeromicro version",
+		Action:      migrate.Migrate,
+		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:  "verbose, v",
+				Usage: "verbose enables extra logging",
+			},
+			cli.StringFlag{
+				Name:  "version",
+				Usage: "the target release version of github.com/zeromicro/go-zero to migrate",
+			},
+		},
 	},
 	{
 		Name:  "api",
@@ -400,8 +418,9 @@ var commands = []cli.Command{
 		Usage: "generate rpc code",
 		Subcommands: []cli.Command{
 			{
-				Name:  "new",
-				Usage: `generate rpc demo service`,
+				Name:        "new",
+				Usage:       `generate rpc demo service`,
+				Description: aurora.Yellow(`deprecated: zrpc code generation use "goctl rpc protoc" instead, for the details see "goctl rpc protoc --help"`).String(),
 				Flags: []cli.Flag{
 					cli.StringFlag{
 						Name:  "style",
@@ -448,8 +467,52 @@ var commands = []cli.Command{
 				Action: rpc.RPCTemplate,
 			},
 			{
-				Name:  "proto",
-				Usage: `generate rpc from proto`,
+				Name:        "protoc",
+				Usage:       "generate grpc code",
+				UsageText:   `example: goctl rpc protoc xx.proto --go_out=./pb --go-grpc_out=./pb --zrpc_out=.`,
+				Description: "for details, see https://go-zero.dev/cn/goctl-rpc.html",
+				Action:      rpc.ZRPC,
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:   "go_out",
+						Hidden: true,
+					},
+					cli.StringFlag{
+						Name:   "go-grpc_out",
+						Hidden: true,
+					},
+					cli.StringFlag{
+						Name:   "go_opt",
+						Hidden: true,
+					},
+					cli.StringFlag{
+						Name:   "go-grpc_opt",
+						Hidden: true,
+					},
+					cli.StringFlag{
+						Name:  "zrpc_out",
+						Usage: "the zrpc output directory",
+					},
+					cli.StringFlag{
+						Name:  "style",
+						Usage: "the file naming format, see [https://github.com/zeromicro/go-zero/tree/master/tools/goctl/config/readme.md]",
+					},
+					cli.StringFlag{
+						Name:  "home",
+						Usage: "the goctl home path of the template",
+					},
+					cli.StringFlag{
+						Name: "remote",
+						Usage: "the remote git repo of the template, --home and --remote cannot be set at the same time, " +
+							"if they are, --remote has higher priority\n\tThe git repo directory must be consistent with the " +
+							"https://github.com/zeromicro/go-zero-template directory structure",
+					},
+				},
+			},
+			{
+				Name:        "proto",
+				Usage:       `generate rpc from proto`,
+				Description: aurora.Yellow(`deprecated: zrpc code generation use "goctl rpc protoc" instead, for the details see "goctl rpc protoc --help"`).String(),
 				Flags: []cli.Flag{
 					cli.StringFlag{
 						Name:  "src, s",
@@ -735,13 +798,29 @@ var commands = []cli.Command{
 			},
 		},
 	},
+	{
+		Name:   "completion",
+		Usage:  "generation completion script, it only works for unix-like OS",
+		Action: completion.Completion,
+		Flags: []cli.Flag{
+			cli.StringFlag{
+				Name:  "name, n",
+				Usage: "the filename of auto complete script, default is [goctl_autocomplete]",
+			},
+		},
+	},
 }
 
 func main() {
 	logx.Disable()
 	load.Disable()
 
+	cli.BashCompletionFlag = cli.BoolFlag{
+		Name:   completion.BashCompletionFlag,
+		Hidden: true,
+	}
 	app := cli.NewApp()
+	app.EnableBashCompletion = true
 	app.Usage = "a cli tool to generate code"
 	app.Version = fmt.Sprintf("%s %s/%s", version.BuildVersion, runtime.GOOS, runtime.GOARCH)
 	app.Commands = commands

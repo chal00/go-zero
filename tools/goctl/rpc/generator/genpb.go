@@ -3,20 +3,26 @@ package generator
 import (
 	"bytes"
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	conf "github.com/tal-tech/go-zero/tools/goctl/config"
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/execx"
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/parser"
+	"github.com/zeromicro/go-zero/core/collection"
+	conf "github.com/zeromicro/go-zero/tools/goctl/config"
+	"github.com/zeromicro/go-zero/tools/goctl/rpc/execx"
+	"github.com/zeromicro/go-zero/tools/goctl/rpc/parser"
 )
 
 const googleProtocGenGoErr = `--go_out: protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC`
 
 // GenPb generates the pb.go file, which is a layer of packaging for protoc to generate gprc,
 // but the commands and flags in protoc are not completely joined in goctl. At present, proto_path(-I) is introduced
-func (g *DefaultGenerator) GenPb(ctx DirContext, protoImportPath []string, proto parser.Proto, _ *conf.Config, goOptions ...string) error {
+func (g *DefaultGenerator) GenPb(ctx DirContext, protoImportPath []string, proto parser.Proto, _ *conf.Config, c *ZRpcContext, goOptions ...string) error {
+	if c != nil {
+		return g.genPbDirect(c)
+	}
+
+	// deprecated: use genPbDirect instead.
 	dir := ctx.GetPb()
 	cw := new(bytes.Buffer)
 	directory, base := filepath.Split(proto.Src)
@@ -102,4 +108,15 @@ go get -u github.com/golang/protobuf/protoc-gen-go`)
 		return err
 	}
 	return nil
+}
+
+func (g *DefaultGenerator) genPbDirect(c *ZRpcContext) error {
+	g.log.Debug(c.ProtocCmd)
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	_, err = execx.Run(c.ProtocCmd, pwd)
+	return err
 }

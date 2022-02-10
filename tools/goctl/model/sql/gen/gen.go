@@ -8,16 +8,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/config"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/model"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
-	modelutil "github.com/tal-tech/go-zero/tools/goctl/model/sql/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/console"
-	"github.com/tal-tech/go-zero/tools/goctl/util/format"
-	"github.com/tal-tech/go-zero/tools/goctl/util/pathx"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/tools/goctl/config"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/model"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/parser"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/template"
+	modelutil "github.com/zeromicro/go-zero/tools/goctl/model/sql/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/console"
+	"github.com/zeromicro/go-zero/tools/goctl/util/format"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 const (
@@ -217,16 +217,16 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 
 	primaryKey, uniqueKey := genCacheKeys(in)
 
-	importsCode, err := genImports(withCache, in.ContainsTime())
-	if err != nil {
-		return "", err
-	}
-
 	var table Table
 	table.Table = in
 	table.PrimaryCacheKey = primaryKey
 	table.UniqueCacheKey = uniqueKey
 	table.ContainsUniqueCacheKey = len(uniqueKey) > 0
+
+	importsCode, err := genImports(withCache, in.ContainsTime(), table)
+	if err != nil {
+		return "", err
+	}
 
 	varsCode, err := genVars(table, withCache, g.isPostgreSql)
 	if err != nil {
@@ -284,7 +284,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 		cacheExtra:  ret.cacheExtra,
 	}
 
-	output, err := g.executeModel(code)
+	output, err := g.executeModel(table, code)
 	if err != nil {
 		return "", err
 	}
@@ -292,7 +292,7 @@ func (g *defaultGenerator) genModel(in parser.Table, withCache bool) (string, er
 	return output.String(), nil
 }
 
-func (g *defaultGenerator) executeModel(code *code) (*bytes.Buffer, error) {
+func (g *defaultGenerator) executeModel(table Table, code *code) (*bytes.Buffer, error) {
 	text, err := pathx.LoadTemplate(category, modelTemplateFile, template.Model)
 	if err != nil {
 		return nil, err
@@ -311,6 +311,7 @@ func (g *defaultGenerator) executeModel(code *code) (*bytes.Buffer, error) {
 		"update":      code.updateCode,
 		"delete":      code.deleteCode,
 		"extraMethod": code.cacheExtra,
+		"data":        table,
 	})
 	if err != nil {
 		return nil, err

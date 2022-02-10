@@ -5,13 +5,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	conf "github.com/tal-tech/go-zero/tools/goctl/config"
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/format"
-	"github.com/tal-tech/go-zero/tools/goctl/util/pathx"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/core/collection"
+	conf "github.com/zeromicro/go-zero/tools/goctl/config"
+	"github.com/zeromicro/go-zero/tools/goctl/rpc/parser"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/format"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 const (
@@ -27,6 +27,7 @@ import (
 
 type {{.server}}Server struct {
 	svcCtx *svc.ServiceContext
+	{{.unimplementedServer}}
 }
 
 func New{{.server}}Server(svcCtx *svc.ServiceContext) *{{.server}}Server {
@@ -83,11 +84,12 @@ func (g *DefaultGenerator) GenServer(ctx DirContext, proto parser.Proto, cfg *co
 	}
 
 	err = util.With("server").GoFmt(true).Parse(text).SaveTo(map[string]interface{}{
-		"head":      head,
-		"server":    stringx.From(service.Name).ToCamel(),
-		"imports":   strings.Join(imports.KeysStr(), pathx.NL),
-		"funcs":     strings.Join(funcList, pathx.NL),
-		"notStream": notStream,
+		"head":                head,
+		"unimplementedServer": fmt.Sprintf("%s.Unimplemented%sServer", proto.PbPackage, stringx.From(service.Name).ToCamel()),
+		"server":              stringx.From(service.Name).ToCamel(),
+		"imports":             strings.Join(imports.KeysStr(), pathx.NL),
+		"funcs":               strings.Join(funcList, pathx.NL),
+		"notStream":           notStream,
 	}, serverFile, true)
 	return err
 }

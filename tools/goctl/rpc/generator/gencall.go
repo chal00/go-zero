@@ -7,13 +7,13 @@ import (
 	"strings"
 
 	"github.com/emicklei/proto"
-	"github.com/tal-tech/go-zero/core/collection"
-	conf "github.com/tal-tech/go-zero/tools/goctl/config"
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/format"
-	"github.com/tal-tech/go-zero/tools/goctl/util/pathx"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/zeromicro/go-zero/core/collection"
+	conf "github.com/zeromicro/go-zero/tools/goctl/config"
+	"github.com/zeromicro/go-zero/tools/goctl/rpc/parser"
+	"github.com/zeromicro/go-zero/tools/goctl/util"
+	"github.com/zeromicro/go-zero/tools/goctl/util/format"
+	"github.com/zeromicro/go-zero/tools/goctl/util/pathx"
+	"github.com/zeromicro/go-zero/tools/goctl/util/stringx"
 )
 
 const (
@@ -24,7 +24,8 @@ package {{.filePackage}}
 import (
 	"context"
 
-	{{.package}}
+	{{.pbPackage}}
+	{{if ne .pbPackage .protoGoPackage}}{{.protoGoPackage}}{{end}}
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -100,14 +101,15 @@ func (g *DefaultGenerator) GenCall(ctx DirContext, proto parser.Proto, cfg *conf
 	aliasKeys := alias.KeysStr()
 	sort.Strings(aliasKeys)
 	err = util.With("shared").GoFmt(true).Parse(text).SaveTo(map[string]interface{}{
-		"name":        callFilename,
-		"alias":       strings.Join(aliasKeys, pathx.NL),
-		"head":        head,
-		"filePackage": dir.Base,
-		"package":     fmt.Sprintf(`"%s"`, ctx.GetPb().Package),
-		"serviceName": stringx.From(service.Name).ToCamel(),
-		"functions":   strings.Join(functions, pathx.NL),
-		"interface":   strings.Join(iFunctions, pathx.NL),
+		"name":           callFilename,
+		"alias":          strings.Join(aliasKeys, pathx.NL),
+		"head":           head,
+		"filePackage":    dir.Base,
+		"pbPackage":      fmt.Sprintf(`"%s"`, ctx.GetPb().Package),
+		"protoGoPackage": fmt.Sprintf(`"%s"`, ctx.GetProtoGo().Package),
+		"serviceName":    stringx.From(service.Name).ToCamel(),
+		"functions":      strings.Join(functions, pathx.NL),
+		"interface":      strings.Join(iFunctions, pathx.NL),
 	}, filename, true)
 	return err
 }

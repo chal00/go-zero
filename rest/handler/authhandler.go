@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/token"
 )
@@ -113,11 +113,13 @@ func unauthorized(w http.ResponseWriter, r *http.Request, err error, callback Un
 		detailAuthLog(r, noDetailReason)
 	}
 
-	writer.WriteHeader(http.StatusUnauthorized)
-
+	// let callback go first, to make sure we respond with user-defined HTTP header
 	if callback != nil {
 		callback(writer, r, err)
 	}
+
+	// if user not setting HTTP header, we set header with 401
+	writer.WriteHeader(http.StatusUnauthorized)
 }
 
 type guardedResponseWriter struct {
