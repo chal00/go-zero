@@ -22,7 +22,7 @@ import (
 	"github.com/zeromicro/go-zero/tools/goctl/vars"
 )
 
-const zeromicroVersion = "1.3.0"
+const zeromicroVersion = "v1.3.0"
 
 const (
 	confirmUnknown = iota
@@ -57,8 +57,10 @@ func Migrate(c *cli.Context) error {
 	}
 
 	if verbose {
-		console.Success("[OK] refactor finish, execute %q on project root to check status.", "go test -race ./...")
+		console.Success("[OK] refactor finish, execute %q on project root to check status.",
+			"go test -race ./...")
 	}
+
 	return nil
 }
 
@@ -162,12 +164,12 @@ func writeFile(pkgs []*ast.Package, verbose bool) error {
 			w := bytes.NewBuffer(nil)
 			err := format.Node(w, fset, file)
 			if err != nil {
-				return fmt.Errorf("[rewriteImport] format file %s error: %+v", filename, err)
+				return fmt.Errorf("[rewriteImport] format file %s error: %w", filename, err)
 			}
 
 			err = ioutil.WriteFile(filename, w.Bytes(), os.ModePerm)
 			if err != nil {
-				return fmt.Errorf("[rewriteImport] write file %s error: %+v", filename, err)
+				return fmt.Errorf("[rewriteImport] write file %s error: %w", filename, err)
 			}
 			if verbose {
 				console.Success("[OK] migrated %q successfully", filepath.Base(filename))

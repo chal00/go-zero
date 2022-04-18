@@ -1,6 +1,4 @@
-package kube
-
-var deploymentTemplate = `apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{.Name}}
@@ -17,7 +15,8 @@ spec:
     metadata:
       labels:
         app: {{.Name}}
-    spec:
+    spec:{{if .ServiceAccount}}
+      serviceAccountName: {{.ServiceAccount}}{{end}}
       containers:
       - name: {{.Name}}
         image: {{.Image}}
@@ -114,4 +113,3 @@ spec:
     resource:
       name: memory
       targetAverageUtilization: 80
-`

@@ -11,6 +11,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/postgres"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/tools/goctl/config"
+	"github.com/zeromicro/go-zero/tools/goctl/model/sql/command/migrationnotes"
 	"github.com/zeromicro/go-zero/tools/goctl/model/sql/gen"
 	"github.com/zeromicro/go-zero/tools/goctl/model/sql/model"
 	"github.com/zeromicro/go-zero/tools/goctl/model/sql/util"
@@ -30,12 +31,15 @@ const (
 	flagDatabase = "database"
 	flagSchema   = "schema"
 	flagHome     = "home"
+	flagRemote   = "remote"
+	flagBranch   = "branch"
 )
 
 var errNotMatched = errors.New("sql not matched")
 
 // MysqlDDL generates model code from ddl
 func MysqlDDL(ctx *cli.Context) error {
+	migrationnotes.BeforeCommands(ctx)
 	src := ctx.String(flagSrc)
 	dir := ctx.String(flagDir)
 	cache := ctx.Bool(flagCache)
@@ -43,9 +47,10 @@ func MysqlDDL(ctx *cli.Context) error {
 	style := ctx.String(flagStyle)
 	database := ctx.String(flagDatabase)
 	home := ctx.String(flagHome)
-	remote := ctx.String("remote")
+	remote := ctx.String(flagRemote)
+	branch := ctx.String(flagBranch)
 	if len(remote) > 0 {
-		repo, _ := file.CloneIntoGitHome(remote)
+		repo, _ := file.CloneIntoGitHome(remote, branch)
 		if len(repo) > 0 {
 			home = repo
 		}
@@ -63,15 +68,17 @@ func MysqlDDL(ctx *cli.Context) error {
 
 // MySqlDataSource generates model code from datasource
 func MySqlDataSource(ctx *cli.Context) error {
+	migrationnotes.BeforeCommands(ctx)
 	url := strings.TrimSpace(ctx.String(flagURL))
 	dir := strings.TrimSpace(ctx.String(flagDir))
 	cache := ctx.Bool(flagCache)
 	idea := ctx.Bool(flagIdea)
 	style := ctx.String(flagStyle)
-	home := ctx.String("home")
-	remote := ctx.String("remote")
+	home := ctx.String(flagHome)
+	remote := ctx.String(flagRemote)
+	branch := ctx.String(flagBranch)
 	if len(remote) > 0 {
-		repo, _ := file.CloneIntoGitHome(remote)
+		repo, _ := file.CloneIntoGitHome(remote, branch)
 		if len(repo) > 0 {
 			home = repo
 		}
@@ -91,16 +98,18 @@ func MySqlDataSource(ctx *cli.Context) error {
 
 // PostgreSqlDataSource generates model code from datasource
 func PostgreSqlDataSource(ctx *cli.Context) error {
+	migrationnotes.BeforeCommands(ctx)
 	url := strings.TrimSpace(ctx.String(flagURL))
 	dir := strings.TrimSpace(ctx.String(flagDir))
 	cache := ctx.Bool(flagCache)
 	idea := ctx.Bool(flagIdea)
 	style := ctx.String(flagStyle)
 	schema := ctx.String(flagSchema)
-	home := ctx.String("home")
-	remote := ctx.String("remote")
+	home := ctx.String(flagHome)
+	remote := ctx.String(flagRemote)
+	branch := ctx.String(flagBranch)
 	if len(remote) > 0 {
-		repo, _ := file.CloneIntoGitHome(remote)
+		repo, _ := file.CloneIntoGitHome(remote, branch)
 		if len(repo) > 0 {
 			home = repo
 		}

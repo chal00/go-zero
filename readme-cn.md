@@ -2,6 +2,8 @@
 
 # go-zero
 
+***缩短从需求到上线的距离***
+
 [English](readme.md) | 简体中文
 
 [![Go](https://github.com/zeromicro/go-zero/workflows/Go/badge.svg?branch=master)](https://github.com/zeromicro/go-zero/actions)
@@ -11,9 +13,13 @@
 [![Release](https://img.shields.io/github/v/release/zeromicro/go-zero.svg?style=flat-square)](https://github.com/zeromicro/go-zero)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> ***缩短从需求到上线的距离***
-
-**注意：为了满足开源基金会要求，go-zero 从好未来（tal-tech）组织下迁移至中立的 GitHub 组织（zeromicro）。**
+> ***注意：***
+>
+> 从 v1.3.0 之前版本升级请执行以下命令：
+> 
+> `GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest`
+> 
+> `goctl migrate —verbose —version v1.3.2`
 
 ## 0. go-zero 介绍
 
@@ -110,6 +116,16 @@ GO111MODULE=on GOPROXY=https://goproxy.cn/,direct go get -u github.com/zeromicro
     
     # Go 1.16 及以后版本
     GOPROXY=https://goproxy.cn/,direct go install github.com/zeromicro/go-zero/tools/goctl@latest
+
+    # docker for amd64 architecture
+    docker pull kevinwan/goctl
+    # run goctl like
+    docker run --rm -it -v `pwd`:/app kevinwan/goctl goctl --help
+
+    # docker for arm64 (M1) architecture
+    docker pull kevinwan/goctl:latest-arm64
+    # run goctl like
+    docker run --rm -it -v `pwd`:/app kevinwan/goctl:latest-arm64 goctl --help
     ```
 
     确保 goctl 可执行
@@ -241,6 +257,11 @@ go-zero 已被许多公司用于生产部署，接入场景如在线教育、电
 >53. 上海扩博智能技术有限公司
 >54. 一犀科技成都有限公司
 >55. 北京术杰科技有限公司
+>56. 时代脉搏网络科技（云浮市）有限公司
+>57. 店有帮
+>58. 七牛云
+>59. 费芮网络
+>60. 51CTO
 
 如果贵公司也已使用 go-zero，欢迎在 [登记地址](https://github.com/zeromicro/go-zero/issues/602) 登记，仅仅为了推广，不做其它用途。
 
@@ -270,3 +291,9 @@ go-zero 收录在 [CNCF Cloud Native 云原生技术全景图](https://landscape
 加群之前有劳点一下 ***star***，一个小小的 ***star*** 是作者们回答海量问题的动力！🤝
 
 <img src="https://raw.githubusercontent.com/zeromicro/zero-doc/main/doc/images/wechat.jpg" alt="wechat" width="300" />
+
+## 12. 赞助一下👍
+
+如果觉得项目有帮助，可以请作者喝杯咖啡 🍹
+
+<img src="https://raw.githubusercontent.com/zeromicro/zero-doc/main/doc/images/sponsor.png" alt="wechat" width="300" />

@@ -1,6 +1,4 @@
-package kube
-
-var jobTmeplate = `apiVersion: batch/v1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{.Name}}
@@ -11,8 +9,9 @@ spec:
   jobTemplate:
     spec:
       template:
-        spec:
-          containers:
+        spec:{{if .ServiceAccount}}
+          serviceAccountName: {{.ServiceAccount}}{{end}}
+	      {{end}}containers:
           - name: {{.Name}}
             image: # todo image url
             resources:
@@ -36,4 +35,3 @@ spec:
           - name: timezone
             hostPath:
               path: /usr/share/zoneinfo/Asia/Shanghai
-`

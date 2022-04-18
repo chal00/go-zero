@@ -23,7 +23,7 @@ func Test_GetSourceProto(t *testing.T) {
 		return
 	}
 
-	var testData = []test{
+	testData := []test{
 		{
 			source:   []string{"a.proto"},
 			expected: filepath.Join(pwd, "a.proto"),
@@ -54,7 +54,7 @@ func Test_GetSourceProto(t *testing.T) {
 }
 
 func Test_RemoveGoctlFlag(t *testing.T) {
-	var testData = []test{
+	testData := []test{
 		{
 			source:   strings.Fields("protoc foo.proto --go_out=. --go_opt=bar --zrpc_out=. --style go-zero --home=foo"),
 			expected: "protoc foo.proto --go_out=. --go_opt=bar",
@@ -79,6 +79,18 @@ func Test_RemoveGoctlFlag(t *testing.T) {
 			source:   strings.Fields(`protoc foo.proto --go_opt=. --zrpc_out="bar" --style=goZero  --home=bar`),
 			expected: "protoc foo.proto --go_opt=.",
 		},
+		{
+			source:   strings.Fields(`protoc --go_opt=. --go-grpc_out=. --zrpc_out=. foo.proto`),
+			expected: "protoc --go_opt=. --go-grpc_out=. foo.proto",
+		},
+		{
+			source:   strings.Fields(`protoc --go_opt=. --go-grpc_out=. --zrpc_out=. --remote=foo --branch=bar foo.proto`),
+			expected: "protoc --go_opt=. --go-grpc_out=. foo.proto",
+		},
+		{
+			source:   strings.Fields(`protoc --go_opt=. --go-grpc_out=. --zrpc_out=. --remote foo --branch bar foo.proto`),
+			expected: "protoc --go_opt=. --go-grpc_out=. foo.proto",
+		},
 	}
 	for _, e := range testData {
 		cmd := strings.Join(removeGoctlFlag(e.source), " ")
@@ -87,7 +99,7 @@ func Test_RemoveGoctlFlag(t *testing.T) {
 }
 
 func Test_RemovePluginFlag(t *testing.T) {
-	var testData = []test{
+	testData := []test{
 		{
 			source:   strings.Fields("plugins=grpc:."),
 			expected: ".",
